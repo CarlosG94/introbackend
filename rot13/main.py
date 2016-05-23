@@ -22,17 +22,20 @@ import webapp2
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape = True)
 
-def translate_that(self, *a):
-	if symbol.isupper():
-		if num > ord('Z'):
-			num -= 13
-		elif num < ord('A'):
-			num += 13
-	elif symbol.islower():
-		if num > ord('z'):
-			num -= 13
-		elif num < ord('a'):
-			num+= 13
+def caesar(input):
+    	chars = "abcdefghijklmnopqrstuvwxyz"
+	caps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	output = ""
+	for i in range(0, len(input)):
+		if input[i] in chars:
+	          ind = (chars.index(input[i]) + 13) % 26
+	          output = output + chars[ind]
+	        elif input[i] in caps:
+	        	ind = (caps.index(input[i]) + 13) % 26
+	        	output = output + caps[ind]
+	        else:
+	        	output = output + input[i]
+	return output
 
 class Handler(webapp2.RequestHandler):
 	def write(self, *a, **kw):
@@ -46,10 +49,12 @@ class Handler(webapp2.RequestHandler):
 		self.write(self.render_str(template, **kw))
 
 class MainHandler(Handler):
-    def get(self):
-        self.render("rot13.html")
+    	def get(self):
+        	self.render("rot13.html")
 
-    # def post(self):
+     	def post(self):
+     		text=caesar(self.request.get("text"))
+     		self.render("rot13.html", text=text)
 
 
 app = webapp2.WSGIApplication([
